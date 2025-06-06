@@ -1,102 +1,216 @@
+'use client'
+import { useState } from "react"
 import Image from "next/image";
+import { NavigationMenu,
+  NavigationMenuContent,
+//  NavigationMenuIndicator,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+//  NavigationMenuViewport,
+} from "@/components/ui/navigation-menu";
+
+import Albon from "@/public/pilots/Albon.png";
+import Alonso from "@/public/pilots/Alonso.png";
+import Antonelli from "@/public/pilots/Antonelli.png";
+import Bearman from "@/public/pilots/Bearman.png";
+import Bortoleto from "@/public/pilots/Bortoleto.png";
+import Doohan from "@/public/pilots/Doohan.png";
+import Norris from "@/public/pilots/Norris.png";
+import Gasly from "@/public/pilots/Gasly.png";
+import Hadjar from "@/public/pilots/Hadjar.png";
+
+import Leclerc from "@/public/pilots/Leclerc.png";
+import Sainz from "@/public/pilots/Sainz.png";
+
+import { closestCenter, DndContext } from "@dnd-kit/core";
 
 export default function Home() {
+
+ const [pilotos, setPilotos] = useState([
+    {
+      nombre: "Hadjar",
+      posicion: 11,
+      imagen: Hadjar,},
+    {
+      nombre: "Lando Norris",
+      posicion: 1,
+      imagen: Norris,},
+    {
+      nombre: "Charles Leclerc",
+      posicion: 2,
+      imagen: Leclerc,},
+    {
+      nombre: "Andrea Antonelli",
+      posicion: 3,
+      imagen: Antonelli,},
+    {
+      nombre: "Carlos Sainz",
+      posicion: 4,
+      imagen: Sainz,},
+    {
+      nombre: "Oliver Bearman",
+      posicion: 5,
+      imagen: Bearman,},
+    {
+      nombre: "Fernando Alonso",
+      posicion: 6,
+      imagen: Alonso,},
+    {
+      nombre: "Gabriel Bortoleto",
+      posicion: 7,
+      imagen: Bortoleto,},
+    {
+      nombre: "Jack Doohan",
+      posicion: 8,
+      imagen: Doohan,},
+    {
+      nombre: "Alexander Albon",
+      posicion: 9,
+      imagen: Albon,},
+    {
+      nombre: "Pierre Gasly",
+      posicion: 10,
+      imagen: Gasly,}
+  ]);
+  const [circuito, setCircuito] =useState("Circuito de Mónaco");
+  const [fecha, setFecha] = useState("28 de mayo de 2023");
+  //const [hora, setHora] = .useState("15:00 CEST");
+  const [vuelta, setVuelta] = useState(1);
+  const [vueltas, setVueltas] = useState(78);
+  //const [vueltaRapida, setVueltaRapida] = useState(1);
+  const [vueltaRapidaPiloto, setVueltaRapidaPiloto] = useState("Lando Norris");
+  //const [vueltaRapidaTiempo, setVueltaRapidaTiempo] = useState("1:30.123");
+
+  const handleDragEnd =() => {
+
+  }
+
   return (
     <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+      <header className="flex flex-col gap-[32px] items-center sm:items-start">
+        <div className="">
+          <NavigationMenu>
+            <NavigationMenuList>
+              <NavigationMenuItem>
+                <NavigationMenuTrigger>Gran Premio</NavigationMenuTrigger>
+                <NavigationMenuContent>
+                  <NavigationMenuLink href="/gran-premio">
+                    Gran Premio
+                  </NavigationMenuLink>
+                </NavigationMenuContent>
+              </NavigationMenuItem>
+              <NavigationMenuItem>
+                <NavigationMenuTrigger>Clasificación</NavigationMenuTrigger>
+                <NavigationMenuContent>
+                  <NavigationMenuLink href="/clasificacion">
+                    Clasificación
+                  </NavigationMenuLink>
+                </NavigationMenuContent>
+              </NavigationMenuItem>
+              <NavigationMenuItem>
+                <NavigationMenuTrigger>Resultados</NavigationMenuTrigger>
+                <NavigationMenuContent>
+                  <NavigationMenuLink href="/resultados">
+                    Resultados
+                  </NavigationMenuLink>
+                </NavigationMenuContent>
+              </NavigationMenuItem>
+            </NavigationMenuList>
+          </NavigationMenu>
         </div>
+      </header>
+      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
+        <DndContext 
+          collisionDetection={closestCenter}
+          onDragEnd={handleDragEnd}>
+          </DndContext>
+      <div className="grid grid-cols-16 grid-rows-10 border-black border-2 rounded-lg p-4 gap-[32px] items-center ">
+        <div className="w-14 col-span-1 flex items-center text-3xl font-medium ">01</div>
+        <div className="col-span-15 flex-none items-center border-black border-2">
+          <Image
+            src={Norris}
+            alt="Lando Norris"
+            className=" "
+          />
+        </div>
+        <div className="w-14 col-span-1 flex items-center text-3xl font-medium">02</div>
+        <div className="col-span-15 flex-none  border-black border-2">
+          <Image
+            src={Leclerc}
+            alt="Charles Leclerc"
+            className=" "
+          />
+        </div>
+        <div className="w-14 col-span-1 flex items-center text-3xl font-medium">03</div>
+        <div className="col-span-15 flex-none  border-black border-2">
+          <Image
+            src={Antonelli}
+            alt="Andrea Antonelli"
+            className=" "
+          />
+        </div>
+        <div className="w-14 col-span-1 flex items-center text-3xl font-medium">04</div>
+        <div className="col-span-15 flex-none  border-black border-2">
+          <Image
+            src={Sainz}
+            alt="Carlos Sainz"
+            className=" "
+          />
+        </div>
+        <div className="w-14 col-span-1 flex items-center text-3xl font-medium">05</div>
+        <div className="col-span-15 flex-none  border-black border-2">
+          <Image
+            src={Bearman}
+            alt="Oliver Bearman"
+            className=" "
+          />
+        </div>
+        <div className="w-14 col-span-1 flex items-center text-3xl font-medium">06</div>
+        <div className="col-span-15 flex-none  border-black border-2">
+          <Image
+            src={Alonso}
+            alt="Fernando Alonso"
+            className=" "
+          />
+        </div>
+        <div className="w-14 col-span-1 flex items-center text-3xl font-medium">07</div>
+        <div className="col-span-15 flex-none  border-black border-2">
+          <Image
+            src={Bortoleto}
+            alt="Gabriel Bortoleto"
+            className=" "
+          />
+        </div>
+        <div className="w-14 col-span-1 flex items-center text-3xl font-medium">08</div>
+        <div className="col-span-15 flex-none  border-black border-2">
+          <Image
+            src={Doohan}
+            alt="Jack Doohan"
+            className=" "
+          />
+        </div>
+        <div className="w-14 col-span-1 flex items-center text-3xl font-medium">09</div>
+        <div className="col-span-15 flex-none  border-black border-2">
+          <Image
+            src={Albon}
+            alt="Alexander Albon"
+            className=" "
+          />
+        </div>
+        <div className="w-14 col-span-1 flex items-center text-3xl font-medium">10</div>
+        <div className="col-span-15 flex-none  border-black border-2">
+          <Image
+            src={Gasly}
+            alt="Pierre Gasly"
+            className=" "
+          />
+        </div>
+      </div>
       </main>
       <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
+        
       </footer>
     </div>
   );
