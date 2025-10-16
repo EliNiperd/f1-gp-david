@@ -26,27 +26,28 @@ function Pilot({ piloto }: PilotProps) {
 
   return (
     <div 
-      className="grid grid-cols-16 w-full items-center mb-2 p-2 bg-white rounded-lg border border-gray-200 hover:shadow-md transition-shadow cursor-grab active:cursor-grabbing"
+      className="grid grid-cols-8 items-center p-2 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 
+      hover:bg-gray-100 dark:hover:bg-gray-700 hover:shadow-md transition-shadow cursor-grab active:cursor-grabbing"
       ref={setNodeRef} 
       style={style} 
       {...attributes} 
       {...listeners}
     >
-      <div className="w-12 col-span-1 flex items-center justify-center text-xl font-bold text-blue-600">
+      <div className="flex col-span-1 items-center justify-center text-xl font-bold text-blue-600 dark:text-blue-400">
         {piloto.posicion}
       </div>
-      <div className="col-span-15 flex items-center gap-3">
+      <div className="flex col-span-7 items-center gap-3">
         <Image
           src={piloto.imagen}
           alt={piloto.nombre}
           className="object-contain flex-shrink-0"
         />
-        <div className="flex flex-col">
-          <span className="text-sm font-semibold">{piloto.nombre}</span>
+        {/* <div className="flex flex-col">
+           <span className="text-sm font-semibold">{piloto.nombre}</span> 
           {piloto.equipo && (
             <span className="text-xs text-gray-500">{piloto.equipo}</span>
           )}
-        </div>
+        </div> */}
       </div>
     </div>
   );

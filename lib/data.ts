@@ -49,7 +49,7 @@ export const pilots: PilotData[] = [
     { id: "15", nombre: "George Russel", posicion: 15, imagen: Russel },
     { id: "16", nombre: "Lance Stroll", posicion: 16, imagen: Stroll },
     { id: "17", nombre: "Liam Lawson", posicion: 17, imagen: Lawson },
-    { id: "18", nombre: "Nicholas Hulkenberg", posicion: 19, imagen: Hulkenberg },
-    { id: "19", nombre: "Pierre Gasly", posicion: 20, imagen: Gasly },
-    { id: "20", nombre: "Jack Doohan", posicion: 21, imagen: Doohan },
+    { id: "18", nombre: "Nicholas Hulkenberg", posicion: 18, imagen: Hulkenberg },
+    { id: "19", nombre: "Pierre Gasly", posicion: 19, imagen: Gasly },
+    { id: "20", nombre: "Jack Doohan", posicion: 20, imagen: Doohan },
 ]
