@@ -1,6 +1,8 @@
 'use client'
+
+import { pilots } from "@/lib/data";
 import { useState } from "react";
-import { useSensor, closestCenter, KeyboardSensor, MouseSensor, useSensors, DragEndEvent, UniqueIdentifier } from "@dnd-kit/core";
+import { useSensor,  KeyboardSensor, MouseSensor, useSensors, DragEndEvent, UniqueIdentifier } from "@dnd-kit/core";
 import { arrayMove, verticalListSortingStrategy } from "@dnd-kit/sortable";
 
 import {
@@ -12,163 +14,14 @@ import {
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
 
-import Albon from "@/public/pilots/Albon.png";
-import Alonso from "@/public/pilots/Alonso.png";
-import Antonelli from "@/public/pilots/Antonelli.png";
-import Bearman from "@/public/pilots/Bearman.png";
-import Bortoleto from "@/public/pilots/Bortoleto.png";
-import Doohan from "@/public/pilots/Doohan.png";
-import Norris from "@/public/pilots/Norris.png";
-import Gasly from "@/public/pilots/Gasly.png";
-import Hadjar from "@/public/pilots/Hadjar.png";
-import Leclerc from "@/public/pilots/Leclerc.png";
-import Sainz from "@/public/pilots/Sainz.png";
-import Verstapen from "@/public/pilots/Verstapen.png";
-import Piastri from "@/public/pilots/Piastri.png";
-import Russel from "@/public/pilots/Russell.png";
-import Hamilton from "@/public/pilots/Hamilton.png";
-import Tsunoda from "@/public/pilots/Tsunoda.png";
-import Lawson from "@/public/pilots/Lawson.png";
-import Stroll from "@/public/pilots/Stroll.png";
-import Hulkenberg from "@/public/pilots/Hulkenberg.png";
-import Ocon from "@/public/pilots/Ocon.png";
-
-
 import { ListPilots } from "@/app/ListPilots";
 
-import type { StaticImageData } from "next/image";
 
-interface PilotData {
-  id: UniqueIdentifier;
-  nombre: string;
-  posicion: number;
-  imagen: StaticImageData;
-  equipo?: string;
-}
+
+
 
 export default function Home() {
-  const [pilotos, setPilotos] = useState<PilotData[]>([
-    {
-      id: "1",
-      nombre: "Lando Norris",
-      posicion: 1,
-      imagen: Norris,
-    },
-    {
-      id: "2",
-      nombre: "Charles Leclerc",
-      posicion: 2,
-      imagen: Leclerc,
-    },
-    {
-      id: "3",
-      nombre: "Andrea Antonelli",
-      posicion: 3,
-      imagen: Antonelli,
-    },
-    {
-      id: "4",
-      nombre: "Carlos Sainz",
-      posicion: 4,
-      imagen: Sainz,
-    },
-    {
-      id: "5",
-      nombre: "Oliver Bearman",
-      posicion: 5,
-      imagen: Bearman,
-    },
-    {
-      id: "6",
-      nombre: "Fernando Alonso",
-      posicion: 6,
-      imagen: Alonso,
-    },
-    {
-      id: "7",
-      nombre: "Gabriel Bortoleto",
-      posicion: 7,
-      imagen: Bortoleto,
-    },
-    {
-      id: "8",
-      nombre: "Jack Doohan",
-      posicion: 8,
-      imagen: Doohan,
-    },
-    {
-      id: "9",
-      nombre: "Alexander Albon",
-      posicion: 9,
-      imagen: Albon,
-    },
-    {
-      id: "10",
-      nombre: "Pierre Gasly",
-      posicion: 10,
-      imagen: Gasly,
-    },
-    {
-      id: "11",
-      nombre: "Hadjar",
-      posicion: 11,
-      imagen: Hadjar,
-    },
-    { 
-      id: "12",
-      nombre: "Max Verstapen",
-      posicion: 12,
-      imagen: Verstapen,
-    },
-    { 
-      id: "13",
-      nombre: "Oscar Piastri",
-      posicion: 13,
-      imagen: Piastri,
-    },
-    { 
-      id: "14",
-      nombre: "Esteban Ocon",
-      posicion: 14,
-      imagen: Ocon,
-    },
-    { 
-      id: "15",
-      nombre: "Lewis Hamilton",
-      posicion: 15,
-      imagen: Hamilton,
-    },
-    { 
-      id: "16",
-      nombre: "Yuki Tsunoda",
-      posicion: 16,
-      imagen: Tsunoda,
-    },
-    { 
-      id: "17",
-      nombre: "George Russel",
-      posicion: 17,
-      imagen: Russel,
-    },
-    { 
-      id: "18",
-      nombre: "LiamLawson",
-      posicion: 18,
-      imagen: Lawson,
-    },
-    { 
-      id: "19",
-      nombre: "Lance Stroll",
-      posicion: 19,
-      imagen: Stroll,
-    },
-    { 
-      id: "20",
-      nombre: "Nicolas Hulkenberg",
-      posicion: 20,
-      imagen: Hulkenberg,
-    } 
-  ]);
+  const [pilotos, setPilotos] = useState(pilots);
 
  const [circuito] = useState("Circuito de Mónaco");
   const [fecha] = useState("28 de mayo de 2023");
