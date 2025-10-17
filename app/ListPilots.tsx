@@ -35,37 +35,26 @@ export const ListPilots: FC<ListPilotsProps> = ({
   modifiers,
   columns = 1, // Valor por defecto: 1 columna
 }) => {
-  // Dividir pilotos en columnas
-  const pilotsPerColumn = Math.ceil(pilots.length / columns);
-  const columnsData = Array.from({ length: columns }, (_, columnIndex) =>
-    pilots.slice(
-      columnIndex * pilotsPerColumn,
-      (columnIndex + 1) * pilotsPerColumn
-    )
-  );
-  //console.log(columnsData);
+  const midIndex = Math.ceil(pilots.length / 2);
+  const column1 = pilots.slice(0, midIndex);
+  const column2 = pilots.slice(midIndex);
 
   return (
     <DndContext sensors={sensors} onDragEnd={onDragEnd} modifiers={modifiers}>
-      <div className={`grid grid-cols-${columns} gap-x-8 w-full `}>
-        <div
-          className="col-span-2 flex items-center justify-center text-2xl font-bold   "
-        >
-        </div>
-        {columnsData.map((columnPilots, columnIndex) => (
-          <SortableContext
-            key={columnIndex}
-            items={columnPilots.map((pilot) => pilot.id)}
-            strategy={strategy}
-          >
-            {columnPilots.map((piloto) => (
-              <div key={piloto.id} className="col-span-1">
-                <Pilot piloto={piloto} />
-              </div>
+      <SortableContext items={pilots.map((p) => p.id)} strategy={strategy}>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
+          <div className="flex flex-col gap-4">
+            {column1.map((piloto) => (
+              <Pilot key={piloto.id} piloto={piloto} />
             ))}
-          </SortableContext>
-        ))}
-      </div>
+          </div>
+          <div className="flex flex-col gap-4">
+            {column2.map((piloto) => (
+              <Pilot key={piloto.id} piloto={piloto} />
+            ))}
+          </div>
+        </div>
+      </SortableContext>
     </DndContext>
   );
 };

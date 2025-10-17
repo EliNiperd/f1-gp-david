@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Gran Premio Fórmula 1 - David Perogil",
+  title: "Fórmula 1- centro de control",
   description: "Aplicación para gestionar los grandes premios de la F1",
 };
 

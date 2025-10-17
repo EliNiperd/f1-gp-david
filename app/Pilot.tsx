@@ -15,13 +15,14 @@ interface PilotProps {
 }
 
 function Pilot({ piloto }: PilotProps) {
-  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({
+  const { attributes, listeners, setNodeRef, transform, transition, isOver } = useSortable({
     id: piloto.id,
   });
 
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
+    color: isOver ? "red" : undefined,
   };
 
   return (
