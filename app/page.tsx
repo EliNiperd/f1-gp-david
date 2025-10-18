@@ -189,10 +189,10 @@ export default function Home() {
       // Calcular número de vueltas
       if (lapsData.length > 0) {
         const lapNumbers = lapsData.map(l => l.lap_number);
-        console.log('Lap numbers for maxLaps calculation:', lapNumbers);
+        //console.log('Lap numbers for maxLaps calculation:', lapNumbers);
         const max = Math.max(...lapNumbers);
         setMaxLaps(max);
-        console.log('Calculated maxLaps:', max);
+        //console.log('Calculated maxLaps:', max);
       }
 
       // Convertir drivers a formato PilotData
@@ -230,6 +230,7 @@ export default function Home() {
         if (oldIndex === -1 || newIndex === -1) return pilotos;
 
         const newPilotos = arrayMove(pilotos, oldIndex, newIndex);
+        //console.log("New pilots order after drag:", newPilotos);
         return newPilotos.map((piloto, index) => ({
           ...piloto,
           posicion: index + 1,
@@ -247,7 +248,7 @@ export default function Home() {
 
   // Iniciar simulación
   const startSimulation = () => {
-    console.log('startSimulation called. laps.length:', laps.length, 'maxLaps:', maxLaps);
+    //console.log('startSimulation called. laps.length:', laps.length, 'maxLaps:', maxLaps);
     if (laps.length === 0) {
       setError("No hay datos de vueltas disponibles");
       return;
@@ -317,7 +318,11 @@ export default function Home() {
       const latestPastTime = Math.max(...pastPositions.map(pos => new Date(pos.date).getTime()));
 
       // Obtener todas las posiciones que coinciden con esa fecha más reciente
-      const relevantPositions = pastPositions.filter(pos => new Date(pos.date).getTime() === latestPastTime);
+      const relevantPositions = pastPositions.filter(pos => {
+        const posDateString = pos.date;
+        const posTime = new Date(posDateString).getTime();
+        return posTime === latestPastTime;
+      });
 
       if (relevantPositions.length === 0) {
         console.warn(`No relevant position data found for latest past time: ${new Date(latestPastTime).toISOString()}.`);
@@ -332,8 +337,15 @@ export default function Home() {
           }
           return piloto;
         });
-        return newPilotos.sort((a, b) => a.posicion - b.posicion);
+        //console.log("Simulation: New Pilotos array before setPilotos", newPilotos);
+        const sortedPilotos = newPilotos.sort((a, b) => a.posicion - b.posicion);
+        const uniquePositionPilotos = sortedPilotos.map((piloto, index) => ({
+          ...piloto,
+          posicion: index + 1,
+        }));
+        return uniquePositionPilotos;
       });
+      //console.log("Simulation: Pilotos state after setPilotos", pilotos);
     }
   }, [elapsedTime, isSimulationRunning, laps, maxLaps, allPositions]);
 
