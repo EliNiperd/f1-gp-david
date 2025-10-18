@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import {
   useSensor,
   KeyboardSensor,
@@ -79,55 +79,62 @@ interface PilotData {
 }
 
 // Hook para OpenF1 API
-const useOpenF1 = () => {
+export const useOpenF1 = () => {
   const BASE_URL = "https://api.openf1.org/v1";
 
-  const fetchMeetings = async (year: number): Promise<Meeting[]> => {
+  const fetchMeetings = useCallback(async (year: number): Promise<Meeting[]> => {
     await new Promise(resolve => setTimeout(resolve, 200)); // Small delay
     const response = await fetch(`${BASE_URL}/meetings?year=${year}`);
     if (!response.ok) throw new Error("Error fetching meetings");
     return response.json();
-  };
+  }, []);
 
-  const fetchSessions = async (meetingKey: number): Promise<Session[]> => {
+  const fetchSessions = useCallback(async (meetingKey: number): Promise<Session[]> => {
     await new Promise(resolve => setTimeout(resolve, 200)); // Small delay
     const response = await fetch(`${BASE_URL}/sessions?meeting_key=${meetingKey}`);
     if (!response.ok) throw new Error("Error fetching sessions");
     return response.json();
-  };
+  }, []);
 
-  const fetchDrivers = async (sessionKey: number): Promise<Driver[]> => {
+  const fetchDrivers = useCallback(async (sessionKey: number): Promise<Driver[]> => {
     await new Promise(resolve => setTimeout(resolve, 200)); // Small delay
     const response = await fetch(`${BASE_URL}/drivers?session_key=${sessionKey}`);
     if (!response.ok) throw new Error("Error fetching drivers");
     return response.json();
-  };
+  }, []);
 
-  const fetchLaps = async (sessionKey: number): Promise<Lap[]> => {
+  const fetchLaps = useCallback(async (sessionKey: number): Promise<Lap[]> => {
     await new Promise(resolve => setTimeout(resolve, 200)); // Small delay
     const response = await fetch(`${BASE_URL}/laps?session_key=${sessionKey}`);
     if (!response.ok) {
       throw new Error("Error fetching laps");
     }
     return response.json();
-  };
+  }, []);
 
-  const fetchPositions = async (sessionKey: number): Promise<OpenF1Position[]> => {
+  const fetchPositions = useCallback(async (sessionKey: number): Promise<OpenF1Position[]> => {
     await new Promise(resolve => setTimeout(resolve, 200)); // Small delay
     const response = await fetch(`${BASE_URL}/position?session_key=${sessionKey}`);
     if (!response.ok) throw new Error("Error fetching positions");
     return response.json();
-  };
+  }, []);
 
-  const fetchTyreData = async (sessionKey: number): Promise<TyreData[]> => {
+  const fetchTyreData = useCallback(async (sessionKey: number): Promise<TyreData[]> => {
     await new Promise(resolve => setTimeout(resolve, 200)); // Small delay
     const response = await fetch(`${BASE_URL}/stints?session_key=${sessionKey}`); // Assuming 'stints' endpoint for tyre data
     //console.log("fetchTyreData response:", response);
     if (!response.ok) throw new Error("Error fetching tyre data");
     return response.json();
-  };
+  }, []);
 
-  return { fetchMeetings, fetchSessions, fetchDrivers, fetchLaps, fetchPositions, fetchTyreData };
+  return useMemo(() => ({
+    fetchMeetings,
+    fetchSessions,
+    fetchDrivers,
+    fetchLaps,
+    fetchPositions,
+    fetchTyreData,
+  }), [fetchMeetings, fetchSessions, fetchDrivers, fetchLaps, fetchPositions, fetchTyreData]);
 };
 
 export default function Home() {
