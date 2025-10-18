@@ -79,7 +79,7 @@ interface PilotData {
 }
 
 // Hook para OpenF1 API
-export const useOpenF1 = () => {
+const useOpenF1 = () => {
   const BASE_URL = "https://api.openf1.org/v1";
 
   const fetchMeetings = async (year: number): Promise<Meeting[]> => {
@@ -182,7 +182,7 @@ export default function Home() {
       }
     };
     loadMeetings();
-  }, [year]);
+  }, [year, api]);
 
   // Cargar sesiones cuando se selecciona un meeting
   const handleMeetingSelect = async (meeting: Meeting) => {
@@ -409,7 +409,7 @@ export default function Home() {
       });
       //console.log("Simulation: Pilotos state after setPilotos", pilotos);
     }
-  }, [elapsedTime, isSimulationRunning, laps, maxLaps, allPositions]);
+  }, [elapsedTime, isSimulationRunning, laps, maxLaps, allPositions, allTyreData]);
 
   const formatTime = (time: number) => {
     const minutes = Math.floor(time / 60);
