@@ -18,7 +18,7 @@ export default function Home() {
   const api = useOpenF1();
 
   // Estados de selección
-  const [year, setYear] = useState(2024);
+  const [year, setYear] = useState(2025);
   const [meetings, setMeetings] = useState<Meeting[]>([]);
   const [selectedMeeting, setSelectedMeeting] = useState<Meeting | null>(null);
   const [sessions, setSessions] = useState<Session[]>([]);
@@ -129,6 +129,7 @@ export default function Home() {
           lapTime: initialLap?.lap_duration || 0,
           timeDiffToAhead: null, // Initial state, will be calculated in simulation
           lastKnownTyreCompound: initialTyre?.compound || 'UNKNOWN',
+          tyreAge: initialTyre?.tyre_age_at_start || 0,
         };
       }).sort((a, b) => a.posicion - b.posicion);
 
@@ -268,6 +269,7 @@ export default function Home() {
             lapTime: currentLapData?.lap_duration || piloto.lapTime,
             currentTyreCompound: compoundToUse,
             lastKnownTyreCompound: compoundToUse !== 'UNKNOWN' ? compoundToUse : piloto.lastKnownTyreCompound,
+            tyreAge: currentTyreData ? (currentTyreData.tyre_age_at_start + (nextLapNumber - currentTyreData.lap_start)) : piloto.tyreAge,
           };
         });
 
@@ -345,7 +347,7 @@ export default function Home() {
                   onChange={(e) => setYear(Number(e.target.value))}
                   className='w-full p-2 border rounded-lg bg-white dark:bg-gray-700 dark:border-gray-600'
                 >
-                   <option value={2025}>2025</option>
+                  <option value={2025}>2025</option>
                   <option value={2024}>2024</option>
                   <option value={2023}>2023</option>
                 </select>

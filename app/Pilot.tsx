@@ -20,6 +20,9 @@ interface PilotData {
   currentTyreCompound?: string;
   lapTime?: number;
   timeDiffToAhead?: number | null;
+  lastKnownTyreCompound?: string;
+  tyreAge?: number;
+
 }
 
 function Pilot({ piloto, disabled }: PilotProps) {
@@ -90,6 +93,9 @@ function Pilot({ piloto, disabled }: PilotProps) {
           <div className="flex items-center gap-2 mb-1">
             <span className="text-sm text-gray-500">Compuesto:</span>
             <div className={`w-4 h-4 rounded-full ${tyreColors[piloto.currentTyreCompound] || tyreColors.UNKNOWN}`}></div>
+            {piloto.tyreAge !== undefined && piloto.tyreAge !== null && (
+              <span className="text-sm text-gray-500">({piloto.tyreAge})</span>
+            )}
           </div>
         )}
         {piloto.lapTime !== undefined && piloto.lapTime !== null && (

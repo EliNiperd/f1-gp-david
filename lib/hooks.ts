@@ -64,6 +64,7 @@ export interface PilotData {
   lapTime?: number; // Lap time for the current lap
   timeDiffToAhead?: number | null; // Difference to the pilot ahead
   lastKnownTyreCompound?: string; // For fallback if current is not found
+  tyreAge?: number; // Age of the current tyre compound in laps
 }
 
 // Hook para OpenF1 API
