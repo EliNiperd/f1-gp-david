@@ -24,7 +24,7 @@ import { StaticImageData } from "next/image";
 
 
 interface PilotData {
-    id: string;
+    id: number;
     nombre: string;
     posicion: number;
     imagen: StaticImageData;
@@ -32,24 +32,24 @@ interface PilotData {
 }
 
 export const pilots: PilotData[] = [
-    { id: "1", nombre: "Lando Norris", posicion: 1, imagen: Norris },
-    { id: "2", nombre: "Charles Leclerc", posicion: 2, imagen: Leclerc },
-    { id: "3", nombre: "Andrea Antonelli", posicion: 3, imagen: Antonelli },
-    { id: "4", nombre: "Carlos Sainz", posicion: 4, imagen: Sainz },
-    { id: "5", nombre: "Oliver Bearman", posicion: 5, imagen: Bearman },
-    { id: "6", nombre: "Fernando Alonso", posicion: 6, imagen: Alonso },
-    { id: "7", nombre: "Gabriel Bortoleto", posicion: 7, imagen: Bortoleto },
-    { id: "8", nombre: "Alexander Albon", posicion: 8, imagen: Albon },
-    { id: "9", nombre: "Isack Hadjar", posicion: 9, imagen: Hadjar },
-    { id: "10", nombre: "Max Verstappen", posicion: 10, imagen: Verstapen},
-    { id: "11", nombre: "Oscar Piastri", posicion: 11, imagen: Piastri },
-    { id: "12", nombre: "Esteban Ocon", posicion: 12, imagen: Ocon },
-    { id: "13", nombre: "Lewis Hamilton", posicion: 13, imagen: Hamilton },
-    { id: "14", nombre: "Yuki Tsunoda", posicion: 14, imagen: Tsunoda },
-    { id: "15", nombre: "George Russel", posicion: 15, imagen: Russel },
-    { id: "16", nombre: "Lance Stroll", posicion: 16, imagen: Stroll },
-    { id: "17", nombre: "Liam Lawson", posicion: 17, imagen: Lawson },
-    { id: "18", nombre: "Nicholas Hulkenberg", posicion: 18, imagen: Hulkenberg },
-    { id: "19", nombre: "Pierre Gasly", posicion: 19, imagen: Gasly },
-    { id: "20", nombre: "Jack Doohan", posicion: 20, imagen: Doohan },
+    { id: 4, nombre: "Lando Norris", posicion: 1, imagen: Norris },
+    { id: 16, nombre: "Charles Leclerc", posicion: 2, imagen: Leclerc },
+    { id: 87, nombre: "Andrea Antonelli", posicion: 3, imagen: Antonelli },
+    { id: 55, nombre: "Carlos Sainz", posicion: 4, imagen: Sainz },
+    { id: 38, nombre: "Oliver Bearman", posicion: 5, imagen: Bearman },
+    { id: 14, nombre: "Fernando Alonso", posicion: 6, imagen: Alonso },
+    { id: 43, nombre: "Gabriel Bortoleto", posicion: 7, imagen: Bortoleto },
+    { id: 23, nombre: "Alexander Albon", posicion: 8, imagen: Albon },
+    { id: 37, nombre: "Isack Hadjar", posicion: 9, imagen: Hadjar },
+    { id: 1, nombre: "Max Verstappen", posicion: 10, imagen: Verstapen},
+    { id: 81, nombre: "Oscar Piastri", posicion: 11, imagen: Piastri },
+    { id: 31, nombre: "Esteban Ocon", posicion: 12, imagen: Ocon },
+    { id: 44, nombre: "Lewis Hamilton", posicion: 13, imagen: Hamilton },
+    { id: 22, nombre: "Yuki Tsunoda", posicion: 14, imagen: Tsunoda },
+    { id: 63, nombre: "George Russel", posicion: 15, imagen: Russel },
+    { id: 18, nombre: "Lance Stroll", posicion: 16, imagen: Stroll },
+    { id: 40, nombre: "Liam Lawson", posicion: 17, imagen: Lawson },
+    { id: 27, nombre: "Nicholas Hulkenberg", posicion: 18, imagen: Hulkenberg },
+    { id: 10, nombre: "Pierre Gasly", posicion: 19, imagen: Gasly },
+    { id: 61, nombre: "Jack Doohan", posicion: 20, imagen: Doohan },
 ]
