@@ -130,6 +130,9 @@ export default function Home() {
           timeDiffToAhead: null, // Initial state, will be calculated in simulation
           lastKnownTyreCompound: initialTyre?.compound || 'UNKNOWN',
           tyreAge: initialTyre?.tyre_age_at_start || 0,
+          status: (initialLap || initialPos) ? 'ACTIVE' : 'DNS',
+          statusColor: (initialLap || initialPos) ? '' : 'text-gray-500',
+          outOfRace: !(initialLap || initialPos),
         };
       }).sort((a, b) => a.posicion - b.posicion);
 
@@ -263,6 +266,26 @@ export default function Home() {
 
           const compoundToUse = currentTyreData?.compound || piloto.lastKnownTyreCompound || 'UNKNOWN';
 
+          // Determine driver status
+          let newStatus = piloto.status;
+          let newStatusColor = piloto.statusColor;
+          let newOutOfRace = piloto.outOfRace;
+
+          if (piloto.status === 'ACTIVE') {
+            const maxLapCompletedByPilot = laps
+              .filter(l => l.driver_number === piloto.id)
+              .reduce((max, l) => Math.max(max, l.lap_number), 0);
+
+            const isStillLapping = maxLapCompletedByPilot >= (nextLapNumber - 1);
+            const isStillInPositions = relevantPositions.some(p => p.driver_number === piloto.id);
+
+            if (!isStillLapping && !isStillInPositions && nextLapNumber > 1) { // Only mark DNF after lap 1
+              newStatus = 'DNF';
+              newStatusColor = 'text-red-500';
+              newOutOfRace = true;
+            }
+          }
+
           return {
             ...piloto,
             posicion: pilotPositionData?.position || piloto.posicion,
@@ -270,11 +293,19 @@ export default function Home() {
             currentTyreCompound: compoundToUse,
             lastKnownTyreCompound: compoundToUse !== 'UNKNOWN' ? compoundToUse : piloto.lastKnownTyreCompound,
             tyreAge: currentTyreData ? (currentTyreData.tyre_age_at_start + (nextLapNumber - currentTyreData.lap_start)) : piloto.tyreAge,
+            status: newStatus,
+            statusColor: newStatusColor,
+            outOfRace: newOutOfRace,
           };
         });
 
-        // Calculate time differences after all positions and lap times are updated
-        const sortedPilotos = newPilotos.sort((a, b) => a.posicion - b.posicion);
+        // Sort pilots: ACTIVE drivers first, then DNF/DNS/etc. at the end
+        const sortedPilotos = newPilotos.sort((a, b) => {
+          if (a.outOfRace && !b.outOfRace) return 1;
+          if (!a.outOfRace && b.outOfRace) return -1;
+          return (a.posicion || 0) - (b.posicion || 0);
+        });
+
         const uniquePositionPilotos = sortedPilotos.map((piloto, index) => ({
           ...piloto,
           posicion: index + 1,

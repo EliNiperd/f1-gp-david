@@ -60,7 +60,7 @@ function Pilot({ piloto, disabled }: PilotProps) {
   const content = (
     <div
       className={`grid grid-cols-8 items-center p-2 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700
-      hover:bg-gray-100 dark:hover:bg-gray-700 hover:shadow-md transition-all duration-200 ${disabled ? 'cursor-default' : 'cursor-grab active:cursor-grabbing'}`}
+      hover:bg-gray-100 dark:hover:bg-gray-700 hover:shadow-md transition-all duration-200 ${disabled ? 'cursor-default' : 'cursor-grab active:cursor-grabbing'} ${piloto.outOfRace ? 'opacity-50' : ''}`}
     >
       <div className="flex col-span-1 items-center justify-center text-xl font-bold text-blue-600 dark:text-blue-400">
         {piloto.posicion}
@@ -73,7 +73,7 @@ function Pilot({ piloto, disabled }: PilotProps) {
           width={50}
           height={50}
         />
-        <span className="font-semibold">{piloto.nombre}</span>
+        <span className={`font-semibold ${piloto.statusColor}`}>{piloto.nombre} {piloto.status !== 'ACTIVE' && `(${piloto.status})`}</span>
       </div>
       <div className="col-span-3 flex flex-col items-end justify-center text-right">
         {piloto.currentTyreCompound && (

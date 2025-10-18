@@ -66,6 +66,9 @@ export interface PilotData {
   timeDiffToAhead?: number | null; // Difference to the pilot ahead
   lastKnownTyreCompound?: string; // For fallback if current is not found
   tyreAge?: number; // Age of the current tyre compound in laps
+  status?: string; // e.g., ACTIVE, DNF, DNS, DSQ, NC, RET
+  statusColor?: string; // Tailwind CSS class for status color
+  outOfRace?: boolean; // True if driver is DNF, DSQ, NC, RET
 }
 
 // Hook para OpenF1 API

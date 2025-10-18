@@ -12,7 +12,7 @@ La aplicación `f1-gp-david` es una herramienta interactiva para visualizar y si
 *   **Estilos:** Tailwind CSS
 *   **Drag and Drop:** `@dnd-kit`
 *   **API de Datos:** OpenF1 API (para datos de carreras, pilotos, vueltas, posiciones y stints)
-*   **Gestión de Estado:** React Hooks (`useState`, `useEffect`)
+*   **Gestión de Estado:** React Hooks (`useState`, `useEffect`, `useCallback`, `useMemo`)
 
 ## Funcionalidades Implementadas
 
@@ -35,7 +35,8 @@ La aplicación `f1-gp-david` es una herramienta interactiva para visualizar y si
 *   **Actualización de Posiciones:** Durante la simulación, las posiciones de los pilotos se actualizan dinámicamente cada 10 segundos, reflejando los datos de la API.
 *   **Visualización de Compuesto de Neumático:**
     *   Se integra el tipo de compuesto de neumático (SOFT, MEDIUM, HARD, INTERMEDIATE, WET) que utiliza cada piloto por vuelta.
-    *   Se muestra como un icono de color correspondiente (círculo de color) a la derecha del control del piloto.
+    *   Se muestra como un **componente SVG dinámico** (ej. `TyreC4Soft`, `TyreC1Hard`) en lugar de un círculo de color, con un tamaño ajustado para el diseño.
+    *   Se muestra el número de vueltas que se ha utilizado el compuesto entre paréntesis al lado del icono.
     *   **Lógica de Fallback:** Si no se encuentra el compuesto de neumático para una vuelta específica, se utiliza el último compuesto conocido para ese piloto.
 *   **Visualización de Tiempos de Vuelta/Diferencias:**
     *   Para el piloto en primera posición, se muestra su tiempo de vuelta actual.
@@ -46,8 +47,12 @@ La aplicación `f1-gp-david` es una herramienta interactiva para visualizar y si
 
 *   **Error 429 (Too Many Requests):** Se mitigó el límite de velocidad de la API de OpenF1 añadiendo pequeños retrasos entre las llamadas `fetch`.
 *   **Error de Imagen `src`:** Se añadió una URL de imagen de fallback para `piloto.imagen` para evitar errores del componente `Image` de Next.js cuando la URL de la imagen del piloto está vacía.
-*   **Errores de Compilación:** Se corrigieron errores de compilación relacionados con la definición de tipos (`disabled is not defined`, `Export useOpenF1 doesn't exist`) y la estructura de la interfaz `TyreData`.
+*   **Errores de Compilación y Tipado:**
+    *   Se corrigieron errores de compilación relacionados con la definición de tipos (`disabled is not defined`, `React is not defined`).
+    *   Se resolvió el error `Export useOpenF1 doesn't exist` y la incompatibilidad de tipos `Type 'UniqueIdentifier' is not assignable to type 'number'` moviendo el hook `useOpenF1` y sus interfaces relacionadas a un archivo `lib/hooks.ts` separado.
+    *   Se actualizó la interfaz `TyreData` para reflejar la estructura correcta de los datos de la API (`lap_start`, `lap_end` en lugar de `lap_number`).
 *   **Consistencia de Posiciones:** Se aseguró que las posiciones de los pilotos fueran únicas y secuenciales durante la simulación, incluso si los datos de la API contenían posiciones duplicadas.
+*   **Bucle Infinito de API Calls:** Se solucionó el problema de las llamadas excesivas a la API al inicio de la aplicación, memoizando las funciones del hook `useOpenF1` con `useCallback` y el objeto `api` con `useMemo` para asegurar su estabilidad entre renders.
 
 ## Próximos Pasos Potenciales
 
