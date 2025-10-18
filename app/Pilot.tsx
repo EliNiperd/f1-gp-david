@@ -4,7 +4,7 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import Image from "next/image";
-//import { PilotData } from "@/app/page"; // Import PilotData
+//import { PilotData } from "@/lib/hooks"; // Import PilotData from lib/hooks.ts
 
 interface PilotProps {
   piloto: PilotData;
