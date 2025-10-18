@@ -1,28 +1,15 @@
-import { UniqueIdentifier } from "@dnd-kit/core";
+import React, { FC } from "react";
 import {
   useSortable,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import Image from "next/image";
-//import { PilotData } from "@/lib/hooks"; // Import PilotData from lib/hooks.ts
+import { PilotData } from "@/lib/hooks"; // Import PilotData from lib/hooks.ts
+import { TyreC1Hard, TyreC3Medium, TyreC4Soft, TyreIntermedium, TyreWet } from "@/components/TyreIcon";
 
 interface PilotProps {
   piloto: PilotData;
   disabled?: boolean;
-}
-
-interface PilotData {
-  id: UniqueIdentifier;
-  nombre: string;
-  posicion: number;
-  imagen: any;
-  equipo?: string;
-  currentTyreCompound?: string;
-  lapTime?: number;
-  timeDiffToAhead?: number | null;
-  lastKnownTyreCompound?: string;
-  tyreAge?: number;
-
 }
 
 function Pilot({ piloto, disabled }: PilotProps) {
@@ -38,14 +25,14 @@ function Pilot({ piloto, disabled }: PilotProps) {
     zIndex: isDragging ? 1000 : 1,
   };
 
-  // Tyre compound color mapping
-  const tyreColors: { [key: string]: string } = {
-    SOFT: 'bg-red-500',
-    MEDIUM: 'bg-yellow-400',
-    HARD: 'bg-white border border-gray-300',
-    INTERMEDIATE: 'bg-green-500',
-    WET: 'bg-blue-500',
-    UNKNOWN: 'bg-gray-400',
+  // Map compound strings to SVG components
+  const TyreIconMap: { [key: string]: React.ElementType } = {
+    SOFT: TyreC4Soft,
+    MEDIUM: TyreC3Medium,
+    HARD: TyreC1Hard,
+    INTERMEDIATE: TyreIntermedium,
+    WET: TyreWet,
+    // UNKNOWN will fall back to the gray circle div
   };
 
   const formatTime = (timeInSeconds: number | undefined | null) => {
@@ -92,7 +79,11 @@ function Pilot({ piloto, disabled }: PilotProps) {
         {piloto.currentTyreCompound && (
           <div className="flex items-center gap-2 mb-1">
             <span className="text-sm text-gray-500">Compuesto:</span>
-            <div className={`w-4 h-4 rounded-full ${tyreColors[piloto.currentTyreCompound] || tyreColors.UNKNOWN}`}></div>
+            {TyreIconMap[piloto.currentTyreCompound] ? (
+              React.createElement(TyreIconMap[piloto.currentTyreCompound], { width: 24, height: 24 })
+            ) : (
+              <div className={`w-4 h-4 rounded-full bg-gray-400`}></div>
+            )}
             {piloto.tyreAge !== undefined && piloto.tyreAge !== null && (
               <span className="text-sm text-gray-500">({piloto.tyreAge})</span>
             )}

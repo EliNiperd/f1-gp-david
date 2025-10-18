@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback, useMemo } from "react";
+import { UniqueIdentifier } from "@dnd-kit/core";
 
 // Tipos para OpenF1 API
 export interface Meeting {
@@ -55,7 +56,7 @@ export interface TyreData {
 }
 
 export interface PilotData {
-  id: number;
+  id: UniqueIdentifier;
   nombre: string;
   posicion: number;
   imagen: any; // Tu StaticImageData
