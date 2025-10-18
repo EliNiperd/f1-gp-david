@@ -11,7 +11,7 @@ export function TyreC1Hard({ width = 64, height = 64 }: { width?: number; height
       {/* Banda de color */}
       <circle cx="32" cy="32" r="24" fill="none" stroke="#ffffff" strokeWidth="6" />
       {/* Identificador en texto */}
-       <text x="32" y="37" textAnchor="middle" fontSize="16" fontWeight="bold" fill="#ffffff">
+       <text x="32" y="40" textAnchor="middle" fontSize="24" fontWeight="bold" fill="#ffffff">
         H
       </text>
     </svg>
@@ -27,7 +27,7 @@ export function TyreC2Hard({ width = 64, height = 64 }: { width?: number; height
         <path d="M32,18 a14,14 0 0,1 0,28" fill="none" />
       </g>
       <circle cx="32" cy="32" r="24" fill="none" stroke="#ffffff" strokeWidth="6" />
-      <text x="32" y="37" textAnchor="middle" fontSize="16" fontWeight="bold" fill="#ffffff">
+      <text x="32" y="40" textAnchor="middle" fontSize="24" fontWeight="bold" fill="#ffffff">
         H
       </text>
     </svg>
@@ -43,7 +43,7 @@ export function TyreC3Medium({ width = 64, height = 64 }: { width?: number; heig
         <path d="M32,16 a16,16 0 0,1 0,32" fill="none" />
       </g>
       <circle cx="32" cy="32" r="24" fill="none" stroke="#ffe600" strokeWidth="6" />
-      <text x="32" y="37" textAnchor="middle" fontSize="16" fontWeight="bold" fill="#ffe600">
+      <text x="32" y="40" textAnchor="middle" fontSize="24" fontWeight="bold" fill="#ffe600">
         M
       </text>
     </svg>
@@ -59,7 +59,7 @@ export function TyreC4Soft({ width = 64, height = 64 }: { width?: number; height
         <path d="M32,20 a12,12 0 0,1 0,24" fill="none" />
       </g>
       <circle cx="32" cy="32" r="24" fill="none" stroke="#ff1900" strokeWidth="6" />
-      <text x="32" y="37" textAnchor="middle" fontSize="16" fontWeight="bold" fill="#ff1900">
+      <text x="32" y="40" textAnchor="middle" fontSize="24" fontWeight="bold" fill="#ff1900">
         S
       </text>
     </svg>
@@ -75,7 +75,7 @@ export function TyreC5Soft({ width = 64, height = 64 }: { width?: number; height
         <path d="M32,22 a10,10 0 0,1 0,20" fill="none" />
       </g>
       <circle cx="32" cy="32" r="24" fill="none" stroke="#ff1900" strokeWidth="6" />
-      <text x="32" y="37" textAnchor="middle" fontSize="16" fontWeight="bold" fill="#ff1900">
+      <text x="32" y="40" textAnchor="middle" fontSize="24" fontWeight="bold" fill="#ff1900">
         S
       </text>
     </svg>
@@ -91,7 +91,7 @@ export function TyreC6Soft({ width = 64, height = 64 }: { width?: number; height
         <path d="M32,24 a8,8 0 0,1 0,16" fill="none" />
       </g>
       <circle cx="32" cy="32" r="24" fill="none" stroke="#ff1900" strokeWidth="6" />
-      <text x="32" y="37" textAnchor="middle" fontSize="16" fontWeight="bold" fill="#ff1900">
+      <text x="32" y="40" textAnchor="middle" fontSize="24" fontWeight="bold" fill="#ff1900">
         S
       </text>
     </svg>
@@ -109,7 +109,7 @@ export function TyreIntermedium({ width = 64, height = 64 }: { width?: number; h
         <path d="M12,40 L40,12" />
       </g>
       <circle cx="32" cy="32" r="24" fill="none" stroke="#009A3E" strokeWidth="6" />
-      <text x="32" y="37" textAnchor="middle" fontSize="16" fontWeight="bold" fill="#009A3E">
+      <text x="32" y="40" textAnchor="middle" fontSize="24" fontWeight="bold" fill="#009A3E">
         I
       </text>
     </svg>
@@ -128,7 +128,7 @@ export function TyreWet({ width = 64, height = 64 }: { width?: number; height?: 
         <path d="M28,48 L60,16" />
       </g>
       <circle cx="32" cy="32" r="24" fill="none" stroke="#0067b1" strokeWidth="6" />
-      <text x="32" y="37" textAnchor="middle" fontSize="16" fontWeight="bold" fill="#0067b1">
+      <text x="32" y="40" textAnchor="middle" fontSize="24" fontWeight="bold" fill="#0067b1">
         W
       </text>
     </svg>

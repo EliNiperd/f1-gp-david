@@ -12,7 +12,7 @@ import { useEffect, useState, useCallback, useMemo } from "react";
 import { arrayMove, rectSortingStrategy } from "@dnd-kit/sortable";
 import { ListPilots } from "@/app/ListPilots";
 import { ModeToggle } from "@/components/mode-toggle";
-import { useOpenF1, PilotData, Meeting, Session, Driver, Lap, OpenF1Position, TyreData } from "@/lib/hooks"; // Import useOpenF1 and PilotData from lib/hooks.ts
+import { useOpenF1, PilotData, Meeting, Session, Driver, Lap, OpenF1Position, TyreData, TEAM_COLORS } from "@/lib/hooks"; // Import useOpenF1 and PilotData from lib/hooks.ts
 
 export default function Home() {
   const api = useOpenF1();
@@ -129,10 +129,10 @@ export default function Home() {
           lapTime: initialLap?.lap_duration || 0,
           timeDiffToAhead: null, // Initial state, will be calculated in simulation
           lastKnownTyreCompound: initialTyre?.compound || 'UNKNOWN',
-          tyreAge: initialTyre?.tyre_age_at_start || 0,
           status: (initialLap || initialPos) ? 'ACTIVE' : 'DNS',
           statusColor: (initialLap || initialPos) ? '' : 'text-gray-500',
           outOfRace: !(initialLap || initialPos),
+          teamColor: TEAM_COLORS[driver.team_name || ''],
         };
       }).sort((a, b) => a.posicion - b.posicion);
 

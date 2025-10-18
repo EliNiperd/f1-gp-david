@@ -13,6 +13,7 @@ interface PilotProps {
 }
 
 function Pilot({ piloto, disabled }: PilotProps) {
+  //console.log(`Pilot ${piloto.nombre} (ID: ${piloto.id}) teamColor: ${piloto.teamColor}`);
   const { attributes, listeners, setNodeRef, transform, transition, isOver, isDragging } = useSortable({
     id: piloto.id,
     disabled,
@@ -59,9 +60,12 @@ function Pilot({ piloto, disabled }: PilotProps) {
 
   const content = (
     <div
-      className={`grid grid-cols-8 items-center p-2 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700
+      className={`relative grid grid-cols-8 items-center p-2 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700
       hover:bg-gray-100 dark:hover:bg-gray-700 hover:shadow-md transition-all duration-200 ${disabled ? 'cursor-default' : 'cursor-grab active:cursor-grabbing'} ${piloto.outOfRace ? 'opacity-50' : ''}`}
     >
+      {piloto.teamColor && (
+        <div className="absolute left-0 top-0 bottom-0 w-2 rounded-l-lg" style={{ backgroundColor: piloto.teamColor }}></div>
+      )}
       <div className="flex col-span-1 items-center justify-center text-xl font-bold text-blue-600 dark:text-blue-400">
         {piloto.posicion}
       </div>

@@ -69,7 +69,22 @@ export interface PilotData {
   status?: string; // e.g., ACTIVE, DNF, DNS, DSQ, NC, RET
   statusColor?: string; // Tailwind CSS class for status color
   outOfRace?: boolean; // True if driver is DNF, DSQ, NC, RET
+  teamColor?: string; // Hex color for the team
 }
+
+// Mapping of team names to their colors for 2024/2025 seasons
+export const TEAM_COLORS: { [key: string]: string } = {
+  "Mercedes": "#00D7B6",
+  "Red Bull Racing": "#4781D7",
+  "Ferrari": "#ED1131",
+  "McLaren": "#F47600",
+  "Alpine": "#00A1E8",
+  "Racing Bulls": "#6C98FF", // Corrected team name from API
+  "Aston Martin": "#229971",
+  "Williams": "#1868DB",
+  "Kick Sauber": "#01C00E",
+  "Haas F1 Team": "#9C9FA2", // Assuming Haas is 'Haas F1 Team' in API
+};
 
 // Hook para OpenF1 API
 export const useOpenF1 = () => {
