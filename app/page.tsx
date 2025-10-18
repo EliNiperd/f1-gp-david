@@ -56,49 +56,78 @@ interface OpenF1Position {
   date: string;
 }
 
+interface TyreData {
+  driver_number: number;
+  compound: string;
+  lap_start: number;
+  lap_end: number;
+  stint_number: number;
+  tyre_age_at_start: number;
+  date?: string;
+}
+
 interface PilotData {
   id: number;
   nombre: string;
   posicion: number;
   imagen: any; // Tu StaticImageData
   equipo?: string;
+  currentTyreCompound?: string; // soft, medium, hard, etc.
+  lapTime?: number; // Lap time for the current lap
+  timeDiffToAhead?: number | null; // Difference to the pilot ahead
+  lastKnownTyreCompound?: string; // For fallback if current is not found
 }
 
 // Hook para OpenF1 API
-const useOpenF1 = () => {
+export const useOpenF1 = () => {
   const BASE_URL = "https://api.openf1.org/v1";
 
   const fetchMeetings = async (year: number): Promise<Meeting[]> => {
+    await new Promise(resolve => setTimeout(resolve, 200)); // Small delay
     const response = await fetch(`${BASE_URL}/meetings?year=${year}`);
     if (!response.ok) throw new Error("Error fetching meetings");
     return response.json();
   };
 
   const fetchSessions = async (meetingKey: number): Promise<Session[]> => {
+    await new Promise(resolve => setTimeout(resolve, 200)); // Small delay
     const response = await fetch(`${BASE_URL}/sessions?meeting_key=${meetingKey}`);
     if (!response.ok) throw new Error("Error fetching sessions");
     return response.json();
   };
 
   const fetchDrivers = async (sessionKey: number): Promise<Driver[]> => {
+    await new Promise(resolve => setTimeout(resolve, 200)); // Small delay
     const response = await fetch(`${BASE_URL}/drivers?session_key=${sessionKey}`);
     if (!response.ok) throw new Error("Error fetching drivers");
     return response.json();
   };
 
   const fetchLaps = async (sessionKey: number): Promise<Lap[]> => {
+    await new Promise(resolve => setTimeout(resolve, 200)); // Small delay
     const response = await fetch(`${BASE_URL}/laps?session_key=${sessionKey}`);
-    if (!response.ok) throw new Error("Error fetching laps");
+    if (!response.ok) {
+      throw new Error("Error fetching laps");
+    }
     return response.json();
   };
 
   const fetchPositions = async (sessionKey: number): Promise<OpenF1Position[]> => {
+    await new Promise(resolve => setTimeout(resolve, 200)); // Small delay
     const response = await fetch(`${BASE_URL}/position?session_key=${sessionKey}`);
     if (!response.ok) throw new Error("Error fetching positions");
     return response.json();
   };
 
-  return { fetchMeetings, fetchSessions, fetchDrivers, fetchLaps, fetchPositions };
+  const fetchTyreData = async (sessionKey: number): Promise<TyreData[]> => {
+    await new Promise(resolve => setTimeout(resolve, 200)); // Small delay
+    const response = await fetch(`${BASE_URL}/stints?session_key=${sessionKey}`); // Assuming 'stints' endpoint for tyre data
+    //console.log("fetchTyreData response:", response);
+    if (!response.ok) throw new Error("Error fetching tyre data");
+    return response.json();
+  };
+
+  return { fetchMeetings, fetchSessions, fetchDrivers, fetchLaps, fetchPositions, fetchTyreData };
 };
 
 export default function Home() {
@@ -116,6 +145,7 @@ export default function Home() {
   const [drivers, setDrivers] = useState<Driver[]>([]);
   const [laps, setLaps] = useState<Lap[]>([]);
   const [allPositions, setAllPositions] = useState<OpenF1Position[]>([]); // Nuevo estado para todas las posiciones
+  const [allTyreData, setAllTyreData] = useState<TyreData[]>([]); // New state for all tyre data
   const [pilotos, setPilotos] = useState<PilotData[]>([]);
   
   // Estados de UI
@@ -176,15 +206,19 @@ export default function Home() {
     
     try {
       // Cargar datos
-      const [driversData, lapsData, positionsData] = await Promise.all([
+      const [driversData, lapsData, positionsData, tyreData] = await Promise.all([
         api.fetchDrivers(session.session_key),
         api.fetchLaps(session.session_key),
-        api.fetchPositions(session.session_key)
+        api.fetchPositions(session.session_key),
+        api.fetchTyreData(session.session_key)
       ]);
 
       setDrivers(driversData);
       setLaps(lapsData);
-      setAllPositions(positionsData); // Asegúrate de que allPositions también se guarda aquí
+      setAllPositions(positionsData);
+      setAllTyreData(tyreData);
+      //console.log("All Tyre Data:", tyreData);
+      //console.log("All Tyre Data:", tyreData); // New state for all tyre data // Asegúrate de que allPositions también se guarda aquí
 
       // Calcular número de vueltas
       if (lapsData.length > 0) {
@@ -198,12 +232,19 @@ export default function Home() {
       // Convertir drivers a formato PilotData
       const pilotosData: PilotData[] = driversData.map(driver => {
         const initialPos = positionsData.find(p => p.driver_number === driver.driver_number && p.date === positionsData[0].date);
+        const initialLap = lapsData.find(l => l.driver_number === driver.driver_number && l.lap_number === 1);
+        const initialTyre = tyreData.find(t => t.driver_number === driver.driver_number && 1 >= t.lap_start && 1 <= t.lap_end);
+
         return {
           id: driver.driver_number,
           nombre: driver.full_name,
           posicion: initialPos?.position || 999,
-          imagen: driver.headshot_url,
-          equipo: driver.team_name
+          imagen: driver.headshot_url || '/pilots/Albon.png', // Fallback image
+          equipo: driver.team_name,
+          currentTyreCompound: initialTyre?.compound || 'UNKNOWN',
+          lapTime: initialLap?.lap_duration || 0,
+          timeDiffToAhead: null, // Initial state, will be calculated in simulation
+          lastKnownTyreCompound: initialTyre?.compound || 'UNKNOWN',
         };
       }).sort((a, b) => a.posicion - b.posicion);
 
@@ -332,18 +373,39 @@ export default function Home() {
       setPilotos(prevPilotos => {
         const newPilotos = prevPilotos.map(piloto => {
           const pilotPositionData = relevantPositions.find(pos => pos.driver_number === piloto.id);
-          if (pilotPositionData) {
-            return { ...piloto, posicion: pilotPositionData.position };
-          }
-          return piloto;
+          const currentLapData = laps.find(l => l.driver_number === piloto.id && l.lap_number === nextLapNumber);
+          const currentTyreData = allTyreData.find(t => t.driver_number === piloto.id && nextLapNumber >= t.lap_start && nextLapNumber <= t.lap_end);
+
+          const compoundToUse = currentTyreData?.compound || piloto.lastKnownTyreCompound || 'UNKNOWN';
+
+          return {
+            ...piloto,
+            posicion: pilotPositionData?.position || piloto.posicion,
+            lapTime: currentLapData?.lap_duration || piloto.lapTime,
+            currentTyreCompound: compoundToUse,
+            lastKnownTyreCompound: compoundToUse !== 'UNKNOWN' ? compoundToUse : piloto.lastKnownTyreCompound,
+          };
         });
-        //console.log("Simulation: New Pilotos array before setPilotos", newPilotos);
+
+        // Calculate time differences after all positions and lap times are updated
         const sortedPilotos = newPilotos.sort((a, b) => a.posicion - b.posicion);
         const uniquePositionPilotos = sortedPilotos.map((piloto, index) => ({
           ...piloto,
           posicion: index + 1,
         }));
-        return uniquePositionPilotos;
+
+        // Now calculate time differences
+        const pilotosWithTimeDiff = uniquePositionPilotos.map((piloto, index, arr) => {
+          if (index === 0) {
+            return { ...piloto, timeDiffToAhead: null }; // First place has no one ahead
+          } else {
+            const pilotAhead = arr[index - 1];
+            const diff = (piloto.lapTime || 0) - (pilotAhead.lapTime || 0);
+            return { ...piloto, timeDiffToAhead: diff };
+          }
+        });
+
+        return pilotosWithTimeDiff;
       });
       //console.log("Simulation: Pilotos state after setPilotos", pilotos);
     }
@@ -399,6 +461,7 @@ export default function Home() {
                   onChange={(e) => setYear(Number(e.target.value))}
                   className='w-full p-2 border rounded-lg bg-white dark:bg-gray-700 dark:border-gray-600'
                 >
+                   <option value={2025}>2025</option>
                   <option value={2024}>2024</option>
                   <option value={2023}>2023</option>
                 </select>
