@@ -54,6 +54,19 @@ La aplicación `f1-gp-david` es una herramienta interactiva para visualizar y si
 *   **Consistencia de Posiciones:** Se aseguró que las posiciones de los pilotos fueran únicas y secuenciales durante la simulación, incluso si los datos de la API contenían posiciones duplicadas.
 *   **Bucle Infinito de API Calls:** Se solucionó el problema de las llamadas excesivas a la API al inicio de la aplicación, memoizando las funciones del hook `useOpenF1` con `useCallback` y el objeto `api` con `useMemo` para asegurar su estabilidad entre renders.
 
+## Problemas Actuales y Próximos Pasos
+
+### 1. Comportamiento Incorrecto de la Simulación
+
+*   **Posiciones Extrañas:** La simulación muestra posiciones de pilotos que no se corresponden con la lógica esperada, a menudo asignando valores inesperados.
+*   **DNFs Prematuros:** Demasiados pilotos son marcados como "DNF" (Did Not Finish) al inicio de la simulación, dejando solo un pequeño subconjunto de pilotos activos (aproximadamente 3). Esto sugiere un problema en la lógica de determinación del estado del piloto o en la forma en que se procesan los datos de posición y vuelta.
+
+**Plan de Acción:**
+1.  **Revisar `useEffect` de Actualización de Posiciones:** Analizar la lógica dentro del `useEffect` que se encarga de actualizar las posiciones de los pilotos, prestando especial atención a:
+    *   La determinación de `relevantPositions` y `latestPastTime` para asegurar que se están obteniendo los datos de posición correctos para cada `nextLapNumber`.
+    *   La condición para marcar a un piloto como `DNF` (`!isStillLapping && !isStillInPositions`). Es probable que esta condición sea demasiado restrictiva o que las variables `isStillLapping` y `isStillInPositions` no se estén calculando correctamente.
+    *   La lógica de ordenamiento final de los pilotos para asegurar que los pilotos activos y no eliminados se muestren correctamente.
+
 ## Próximos Pasos Potenciales
 
 *   Implementar un mecanismo de caché más robusto para los datos de la API para reducir las llamadas y mejorar el rendimiento.

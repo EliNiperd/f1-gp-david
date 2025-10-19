@@ -6,6 +6,7 @@ import {
   MouseSensor,
   useSensors,
   DragEndEvent,
+  UniqueIdentifier,
 } from "@dnd-kit/core";
 
 import { useEffect, useState, useCallback, useMemo } from "react";
@@ -13,6 +14,7 @@ import { arrayMove, rectSortingStrategy } from "@dnd-kit/sortable";
 import { ListPilots } from "@/app/ListPilots";
 import { ModeToggle } from "@/components/mode-toggle";
 import { useOpenF1, PilotData, Meeting, Session, Driver, Lap, OpenF1Position, TyreData, TEAM_COLORS } from "@/lib/hooks"; // Import useOpenF1 and PilotData from lib/hooks.ts
+import LogoApp from "@/components/LogoApp";
 
 export default function Home() {
   const api = useOpenF1();
@@ -31,6 +33,9 @@ export default function Home() {
   const [allPositions, setAllPositions] = useState<OpenF1Position[]>([]); // Nuevo estado para todas las posiciones
   const [allTyreData, setAllTyreData] = useState<TyreData[]>([]); // New state for all tyre data
   const [pilotos, setPilotos] = useState<PilotData[]>([]);
+  const [qBestLapTimes, setQBestLapTimes] = useState<{ [driverId: UniqueIdentifier]: number }>({});
+  const [currentQStage, setCurrentQStage] = useState<string | null>(null);
+  const [qCutOffTimes, setQCutOffTimes] = useState<{ Q1: number | null, Q2: number | null }>({ Q1: null, Q2: null });
   
   // Estados de UI
   const [isClient, setIsClient] = useState(false);
@@ -42,7 +47,7 @@ export default function Home() {
   const [currentLap, setCurrentLap] = useState(0);
   const [maxLaps, setMaxLaps] = useState(0);
   const [elapsedTime, setElapsedTime] = useState(0);
-  const [isHeaderOpen, setIsHeaderOpen] = useState(true);
+  const [isHeaderOpen, setIsHeaderOpen] = useState(false);
 
   useEffect(() => {
     setIsClient(true);
@@ -133,6 +138,8 @@ export default function Home() {
           statusColor: (initialLap || initialPos) ? '' : 'text-gray-500',
           outOfRace: !(initialLap || initialPos),
           teamColor: TEAM_COLORS[driver.team_name || ''],
+          qStatus: (selectedSession?.session_type === 'Qualifying' && (initialLap || initialPos)) ? 'Q1' : undefined,
+          isEliminated: false,
         };
       }).sort((a, b) => a.posicion - b.posicion);
 
@@ -229,6 +236,7 @@ export default function Home() {
       }
 
       const targetTime = new Date(representativeLap.date_start).getTime();
+      console.log(`Target Time for lap ${nextLapNumber}: ${new Date(targetTime).toISOString()}`);
       if (isNaN(targetTime)) {
         console.warn(`Invalid date_start for lap number ${nextLapNumber}: ${representativeLap.date_start}`);
         return;
@@ -237,30 +245,28 @@ export default function Home() {
       // Encontrar la instantánea de posición más cercana a la fecha de inicio de la vuelta
       // Filtrar posiciones cuya fecha sea menor o igual a targetTime
       const pastPositions = allPositions.filter(pos => new Date(pos.date).getTime() <= targetTime);
+      console.log(`All Positions length: ${allPositions.length}`);
+      console.log(`Past Positions for lap ${nextLapNumber}:`, pastPositions.map(p => ({ driver_number: p.driver_number, position: p.position, date: p.date })));
+      // Construir un mapa de las posiciones más recientes para cada piloto
+      const relevantPositionsMap = new Map<UniqueIdentifier, OpenF1Position>();
+      // Ordenar pastPositions por fecha para asegurar que la última posición para cada piloto sea la más reciente
+      const sortedPastPositions = [...pastPositions].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
-      if (pastPositions.length === 0) {
-        console.warn(`No past position data found for target time: ${new Date(targetTime).toISOString()}.`);
-        return;
-      }
-
-      // Encontrar la fecha más reciente entre las posiciones pasadas
-      const latestPastTime = Math.max(...pastPositions.map(pos => new Date(pos.date).getTime()));
-
-      // Obtener todas las posiciones que coinciden con esa fecha más reciente
-      const relevantPositions = pastPositions.filter(pos => {
-        const posDateString = pos.date;
-        const posTime = new Date(posDateString).getTime();
-        return posTime === latestPastTime;
+      sortedPastPositions.forEach(pos => {
+        relevantPositionsMap.set(pos.driver_number, pos);
       });
+      console.log(`Relevant Positions Map for lap ${nextLapNumber} (${relevantPositionsMap.size} drivers):`, Array.from(relevantPositionsMap.values()).map(p => ({ driver_number: p.driver_number, position: p.position, date: p.date })));
 
-      if (relevantPositions.length === 0) {
-        console.warn(`No relevant position data found for latest past time: ${new Date(latestPastTime).toISOString()}.`);
+      if (relevantPositionsMap.size === 0) {
+        console.warn(`No relevant position data found for target time: ${new Date(targetTime).toISOString()}.`);
         return;
       }
+
+
 
       setPilotos(prevPilotos => {
         const newPilotos = prevPilotos.map(piloto => {
-          const pilotPositionData = relevantPositions.find(pos => pos.driver_number === piloto.id);
+          const pilotPositionData = relevantPositionsMap.get(piloto.id);
           const currentLapData = laps.find(l => l.driver_number === piloto.id && l.lap_number === nextLapNumber);
           const currentTyreData = allTyreData.find(t => t.driver_number === piloto.id && nextLapNumber >= t.lap_start && nextLapNumber <= t.lap_end);
 
@@ -276,13 +282,30 @@ export default function Home() {
               .filter(l => l.driver_number === piloto.id)
               .reduce((max, l) => Math.max(max, l.lap_number), 0);
 
-            const isStillLapping = maxLapCompletedByPilot >= (nextLapNumber - 1);
-            const isStillInPositions = relevantPositions.some(p => p.driver_number === piloto.id);
+            const hasCompletedCurrentLap = laps.some(l => l.driver_number === piloto.id && l.lap_number === nextLapNumber);
+            const isInRelevantPositions = relevantPositionsMap.has(piloto.id);
 
-            if (!isStillLapping && !isStillInPositions && nextLapNumber > 1) { // Only mark DNF after lap 1
+            if (!hasCompletedCurrentLap && !isInRelevantPositions && nextLapNumber > 1) { // Only mark DNF after lap 1
               newStatus = 'DNF';
               newStatusColor = 'text-red-500';
               newOutOfRace = true;
+            }
+          }
+
+          // Qualification Logic
+          let newQStatus = piloto.qStatus;
+          const newIsEliminated = piloto.isEliminated;
+          let currentBestLapTime = piloto.bestLapTime || Infinity;
+
+          if (selectedSession?.session_type === 'Qualifying' && !piloto.outOfRace && !piloto.isEliminated) {
+            if (currentLapData && currentLapData.lap_duration && currentLapData.lap_duration < currentBestLapTime) {
+              currentBestLapTime = currentLapData.lap_duration;
+              setQBestLapTimes(prev => ({ ...prev, [piloto.id]: currentBestLapTime }));
+            }
+
+            // Default to Q1 if not eliminated yet
+            if (!newIsEliminated && newQStatus !== 'OUT_Q1' && newQStatus !== 'OUT_Q2' && newQStatus !== 'Q3') {
+              newQStatus = 'Q1';
             }
           }
 
@@ -296,23 +319,29 @@ export default function Home() {
             status: newStatus,
             statusColor: newStatusColor,
             outOfRace: newOutOfRace,
+            qStatus: newQStatus,
+            isEliminated: newIsEliminated,
+            bestLapTime: currentBestLapTime === Infinity ? undefined : currentBestLapTime,
           };
         });
+
+
 
         // Sort pilots: ACTIVE drivers first, then DNF/DNS/etc. at the end
         const sortedPilotos = newPilotos.sort((a, b) => {
           if (a.outOfRace && !b.outOfRace) return 1;
           if (!a.outOfRace && b.outOfRace) return -1;
+          // For qualifying, sort by best lap time if not eliminated
+          if (selectedSession?.session_type === 'Qualifying' && !a.isEliminated && !b.isEliminated) {
+            return (a.bestLapTime || Infinity) - (b.bestLapTime || Infinity);
+          }
           return (a.posicion || 0) - (b.posicion || 0);
-        });
+        }).map((piloto, index) => ({ ...piloto, posicion: index + 1 })); // Re-assign sequential positions
 
-        const uniquePositionPilotos = sortedPilotos.map((piloto, index) => ({
-          ...piloto,
-          posicion: index + 1,
-        }));
+
 
         // Now calculate time differences
-        const pilotosWithTimeDiff = uniquePositionPilotos.map((piloto, index, arr) => {
+        const pilotosWithTimeDiff = sortedPilotos.map((piloto, index, arr) => {
           if (index === 0) {
             return { ...piloto, timeDiffToAhead: null }; // First place has no one ahead
           } else {
@@ -326,7 +355,7 @@ export default function Home() {
       });
       //console.log("Simulation: Pilotos state after setPilotos", pilotos);
     }
-  }, [elapsedTime, isSimulationRunning, laps, maxLaps, allPositions, allTyreData]);
+  }, [elapsedTime, isSimulationRunning, laps, maxLaps, allPositions, allTyreData, selectedSession?.session_type]);
 
   const formatTime = (time: number) => {
     const minutes = Math.floor(time / 60);
@@ -350,6 +379,9 @@ export default function Home() {
         <div className='w-full max-w-6xl'>
           <div className='bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 mb-4'>
             <div className='flex items-center justify-between mb-6'>
+              <div className='flex items-center gap-2 text-cyan-100 text-2xl'>
+              <LogoApp />
+              </div>
               <h1 className='text-3xl font-bold'>🏁 Selector de Carreras F1</h1>
               <ModeToggle />
             </div>
@@ -464,6 +496,14 @@ export default function Home() {
                 </h1>
               </div>
               <div className='flex items-center gap-4'>
+                  <p className='text-sm text-gray-600 dark:text-gray-300'>
+                    {new Date(selectedMeeting?.date_start || '').toLocaleDateString('es-ES')} • Vuelta {currentLap}/{maxLaps}
+                  </p>
+                  <p className='text-sm text-gray-600 dark:text-gray-300'>
+                    🏎️ {drivers.length} Pilotos
+                  </p>
+                </div>
+              <div className='flex items-center gap-4'>
                 {isSimulationRunning && <p>Tiempo: {formatTime(elapsedTime)}</p>}
                 <button onClick={() => setIsHeaderOpen(!isHeaderOpen)} className='p-2'>
                   {isHeaderOpen ? "Ocultar" : "Mostrar"}
@@ -473,14 +513,7 @@ export default function Home() {
             </div>
             {isHeaderOpen && (
               <div className='mt-2'>
-                <div className='flex items-center gap-4'>
-                  <p className='text-sm text-gray-600 dark:text-gray-300'>
-                    {new Date(selectedMeeting?.date_start || '').toLocaleDateString('es-ES')} • Vuelta {currentLap}/{maxLaps}
-                  </p>
-                  <p className='text-sm text-gray-600 dark:text-gray-300'>
-                    🏎️ {drivers.length} Pilotos
-                  </p>
-                </div>
+                
                 <p className='text-sm text-gray-500 dark:text-gray-400 mt-2'>
                   {isSimulationRunning 
                     ? "Simulación en curso - Las posiciones se actualizan cada 10 segundos"

@@ -70,6 +70,9 @@ export interface PilotData {
   statusColor?: string; // Tailwind CSS class for status color
   outOfRace?: boolean; // True if driver is DNF, DSQ, NC, RET
   teamColor?: string; // Hex color for the team
+  qStatus?: string; // e.g., Q1, Q2, Q3, OUT_Q1, OUT_Q2, POLE
+  isEliminated?: boolean; // True if driver is eliminated from qualification
+  bestLapTime?: number; // Best lap time for the driver during qualification
 }
 
 // Mapping of team names to their colors for 2024/2025 seasons
