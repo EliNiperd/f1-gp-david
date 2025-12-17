@@ -1,30 +1,33 @@
+# --- Builder ---
 FROM node:20-alpine AS builder
 WORKDIR /app
 
-# Copiar package.json y lockfile
-COPY package.json package-lock.json ./
-RUN npm ci
+# Instalar pnpm globalmente
+RUN npm install -g pnpm
+
+# Copiar package.json y pnpm-lock.yaml (si existe)
+COPY package.json pnpm-lock.yaml* ./
+
+# Instalar dependencias
+RUN pnpm install
 
 # Copiar el resto del proyecto
 COPY . .
-# Construir la aplicación
-RUN npm run build
 
-# --- Runtime ---
-FROM node:20-alpine AS runtime
+# Construir la aplicación
+RUN pnpm build
+
+# --- Runner ---
+FROM node:20-alpine AS runner
 WORKDIR /app
 
-ENV NODE_ENV production
+ENV NODE_ENV=production
 
 # Copiar solo el output standalone
 COPY --from=builder /app/.next/standalone ./
-# Copiar los assets
 COPY --from=builder /app/.next/static ./.next/static
-# Copiar public folder
 COPY --from=builder /app/public ./public
 
-# Exponer el puerto 3000
 EXPOSE 3000
 
-# Ejecutar la aplicación
 CMD ["node", "server.js"]
