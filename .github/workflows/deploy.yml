@@ -21,7 +21,7 @@ jobs:
 
       - name: Push Docker image to GHCR
         run: |
-          docker push ghcr.io/${{ github.repository_owner,, }}/demo-race:latest
+          docker push ghcr.io/${{ github.repository }}/demo-race:latest
 
       - name: Connect to VPS and deploy
         uses: appleboy/ssh-action@v1.2.0
@@ -40,10 +40,10 @@ jobs:
             docker rm demo-race || true
 
             # Pull latest image from GHCR
-            docker pull ghcr.io/${{ github.repository_owner,, }}/demo-race:latest
+            docker pull ghcr.io/${{ github.repository}}/demo-race:latest
 
             # Run new container
-            docker run -d --name demo-race -p 8083:3000 ghcr.io/${{ github.repository_owner,, }}/demo-race:latest
+            docker run -d --name demo-race -p 8083:3000 ghcr.io/${{ github.repository }}/demo-race:latest
 
             # Cleanup old images
             docker image prune -f
