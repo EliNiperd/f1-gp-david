@@ -20,7 +20,11 @@ export default function Home() {
   const api = useOpenF1();
 
   // Estados de selección
-  const [year, setYear] = useState(2025);
+  const currentYear = useMemo(() => new Date().getFullYear(), []);
+  const [year, setYear] = useState(currentYear);
+  const availableYears = useMemo(() => {
+    return Array.from({ length: 3 }, (_, i) => currentYear - i);
+  }, [currentYear]);
   const [meetings, setMeetings] = useState<Meeting[]>([]);
   const [selectedMeeting, setSelectedMeeting] = useState<Meeting | null>(null);
   const [sessions, setSessions] = useState<Session[]>([]);
@@ -410,9 +414,11 @@ export default function Home() {
                   onChange={(e) => setYear(Number(e.target.value))}
                   className='w-full p-2 border rounded-lg bg-white dark:bg-gray-700 dark:border-gray-600'
                 >
-                  <option value={2025}>2025</option>
-                  <option value={2024}>2024</option>
-                  <option value={2023}>2023</option>
+                  {availableYears.map((y) => (
+                    <option key={y} value={y}>
+                      {y}
+                    </option>
+                  ))}
                 </select>
               </div>
 
