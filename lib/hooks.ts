@@ -93,49 +93,47 @@ export const TEAM_COLORS: { [key: string]: string } = {
 export const useOpenF1 = () => {
   const BASE_URL = "https://api.openf1.org/v1";
 
+  const fetchWithRetry = async (url: string, retries = 3, delay = 500): Promise<any> => {
+    try {
+      const response = await fetch(url);
+      if (response.status === 429 && retries > 0) {
+        console.warn(`Rate limit hit (429). Retrying in ${delay}ms... (${retries} retries left)`);
+        await new Promise(resolve => setTimeout(resolve, delay));
+        return fetchWithRetry(url, retries - 1, delay * 2);
+      }
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status} for ${url}`);
+      return response.json();
+    } catch (error) {
+      if (retries > 0) {
+        await new Promise(resolve => setTimeout(resolve, delay));
+        return fetchWithRetry(url, retries - 1, delay * 2);
+      }
+      throw error;
+    }
+  };
+
   const fetchMeetings = useCallback(async (year: number): Promise<Meeting[]> => {
-    await new Promise(resolve => setTimeout(resolve, 200)); // Small delay
-    const response = await fetch(`${BASE_URL}/meetings?year=${year}`);
-    if (!response.ok) throw new Error("Error fetching meetings");
-    return response.json();
+    return fetchWithRetry(`${BASE_URL}/meetings?year=${year}`);
   }, []);
 
   const fetchSessions = useCallback(async (meetingKey: number): Promise<Session[]> => {
-    await new Promise(resolve => setTimeout(resolve, 200)); // Small delay
-    const response = await fetch(`${BASE_URL}/sessions?meeting_key=${meetingKey}`);
-    if (!response.ok) throw new Error("Error fetching sessions");
-    return response.json();
+    return fetchWithRetry(`${BASE_URL}/sessions?meeting_key=${meetingKey}`);
   }, []);
 
   const fetchDrivers = useCallback(async (sessionKey: number): Promise<Driver[]> => {
-    await new Promise(resolve => setTimeout(resolve, 200)); // Small delay
-    const response = await fetch(`${BASE_URL}/drivers?session_key=${sessionKey}`);
-    if (!response.ok) throw new Error("Error fetching drivers");
-    return response.json();
+    return fetchWithRetry(`${BASE_URL}/drivers?session_key=${sessionKey}`);
   }, []);
 
   const fetchLaps = useCallback(async (sessionKey: number): Promise<Lap[]> => {
-    await new Promise(resolve => setTimeout(resolve, 200)); // Small delay
-    const response = await fetch(`${BASE_URL}/laps?session_key=${sessionKey}`);
-    if (!response.ok) {
-      throw new Error("Error fetching laps");
-    }
-    return response.json();
+    return fetchWithRetry(`${BASE_URL}/laps?session_key=${sessionKey}`);
   }, []);
 
   const fetchPositions = useCallback(async (sessionKey: number): Promise<OpenF1Position[]> => {
-    await new Promise(resolve => setTimeout(resolve, 200)); // Small delay
-    const response = await fetch(`${BASE_URL}/position?session_key=${sessionKey}`);
-    if (!response.ok) throw new Error("Error fetching positions");
-    return response.json();
+    return fetchWithRetry(`${BASE_URL}/position?session_key=${sessionKey}`);
   }, []);
 
   const fetchTyreData = useCallback(async (sessionKey: number): Promise<TyreData[]> => {
-    await new Promise(resolve => setTimeout(resolve, 200)); // Small delay
-    const response = await fetch(`${BASE_URL}/stints?session_key=${sessionKey}`); // Assuming 'stints' endpoint for tyre data
-    //console.log("fetchTyreData response:", response);
-    if (!response.ok) throw new Error("Error fetching tyre data");
-    return response.json();
+    return fetchWithRetry(`${BASE_URL}/stints?session_key=${sessionKey}`);
   }, []);
 
   return useMemo(() => ({
