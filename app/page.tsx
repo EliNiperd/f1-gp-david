@@ -382,9 +382,9 @@ export default function Home() {
       {/* Selector de Carreras */}
       {showSelector && (
         <div className='w-full max-w-6xl'>
-          <div className='bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 mb-4'>
+          <div className='f1-card p-6 mb-4'>
             <div className='flex items-center justify-between mb-6'>
-              <div className='flex items-center gap-2 text-cyan-100 text-2xl'>
+              <div className='flex items-center gap-2 text-primary text-2xl'>
               <LogoApp />
               </div>
               <h1 className='text-3xl font-bold'>🏁 Selector de Carreras F1</h1>
@@ -392,15 +392,15 @@ export default function Home() {
             </div>
 
             {error && (
-              <div className='bg-red-100 dark:bg-red-900/30 border border-red-400 text-red-700 dark:text-red-300 px-4 py-3 rounded mb-4'>
+              <div className='bg-destructive/10 border border-destructive text-destructive px-4 py-3 rounded-lg mb-4'>
                 {error}
               </div>
             )}
 
             {loading && (
-              <div className='bg-blue-100 dark:bg-blue-900/30 border border-blue-400 text-blue-700 dark:text-blue-300 px-4 py-3 rounded mb-4'>
+              <div className='bg-primary/10 border border-primary text-primary px-4 py-3 rounded-lg mb-4'>
                 <div className='flex items-center gap-2'>
-                  <div className='animate-spin rounded-full h-4 w-4 border-b-2 border-blue-700'></div>
+                  <div className='animate-spin rounded-full h-4 w-4 border-b-2 border-primary'></div>
                   Cargando...
                 </div>
               </div>
@@ -409,11 +409,11 @@ export default function Home() {
             <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
               {/* Año */}
               <div>
-                <label className='block text-sm font-semibold mb-2'>Año</label>
+                <label className='block text-sm font-bold uppercase tracking-wider mb-2'>Año</label>
                 <select
                   value={year}
                   onChange={(e) => setYear(Number(e.target.value))}
-                  className='w-full p-2 border rounded-lg bg-white dark:bg-gray-700 dark:border-gray-600'
+                  className='f1-input'
                 >
                   {availableYears.map((y) => (
                     <option key={y} value={y}>
@@ -425,14 +425,14 @@ export default function Home() {
 
               {/* Carreras */}
               <div>
-                <label className='block text-sm font-semibold mb-2'>Carrera</label>
+                <label className='block text-sm font-bold uppercase tracking-wider mb-2'>Carrera</label>
                 <select
                   value={selectedMeeting?.meeting_key || ''}
                   onChange={(e) => {
                     const meeting = meetings.find(m => m.meeting_key === Number(e.target.value));
                     if (meeting) handleMeetingSelect(meeting);
                   }}
-                  className='w-full p-2 border rounded-lg bg-white dark:bg-gray-700 dark:border-gray-600'
+                  className='f1-input'
                   disabled={loading}
                 >
                   <option value=''>Selecciona una carrera</option>
@@ -446,14 +446,14 @@ export default function Home() {
 
               {/* Sesiones */}
               <div>
-                <label className='block text-sm font-semibold mb-2'>Sesión</label>
+                <label className='block text-sm font-bold uppercase tracking-wider mb-2'>Sesión</label>
                 <select
                   value={selectedSession?.session_key || ''}
                   onChange={(e) => {
                     const session = sessions.find(s => s.session_key === Number(e.target.value));
                     if (session) handleSessionSelect(session);
                   }}
-                  className='w-full p-2 border rounded-lg bg-white dark:bg-gray-700 dark:border-gray-600'
+                  className='f1-input'
                   disabled={!selectedMeeting || loading}
                 >
                   <option value=''>Selecciona una sesión</option>
@@ -467,12 +467,12 @@ export default function Home() {
             </div>
 
             {selectedMeeting && (
-              <div className='mt-4 p-4 bg-gray-100 dark:bg-gray-700 rounded-lg'>
-                <h3 className='font-semibold mb-2'>{selectedMeeting.meeting_name}</h3>
-                <p className='text-sm text-gray-600 dark:text-gray-300'>
+              <div className='mt-4 p-4 bg-muted rounded-lg'>
+                <h3 className='font-bold mb-2'>{selectedMeeting.meeting_name}</h3>
+                <p className='text-sm text-muted-foreground'>
                   📍 {selectedMeeting.location}, {selectedMeeting.country_name}
                 </p>
-                <p className='text-sm text-gray-600 dark:text-gray-300'>
+                <p className='text-sm text-muted-foreground'>
                   📅 {new Date(selectedMeeting.date_start).toLocaleDateString('es-ES', {
                     weekday: 'long',
                     year: 'numeric',
@@ -489,12 +489,12 @@ export default function Home() {
       {/* Vista de Simulación */}
       {!showSelector && (
         <>
-          <header className='w-full border-2 border-gray-200 dark:border-gray-700 rounded-lg p-2 transition-all duration-300'>
+          <header className='w-full f1-panel p-4 mb-4'>
             <div className='flex items-center justify-between'>
               <div className='flex items-center gap-4'>
                 <button
                   onClick={backToSelector}
-                  className='px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg transition-colors'
+                  className='f1-button-secondary py-2'
                 >
                   ← Volver
                 </button>
@@ -503,31 +503,33 @@ export default function Home() {
                 </h1>
               </div>
               <div className='flex items-center gap-4'>
-                  <p className='text-sm text-gray-600 dark:text-gray-300'>
+                  <p className='text-sm text-muted-foreground font-mono'>
                     {new Date(selectedMeeting?.date_start || '').toLocaleDateString('es-ES')} • Vuelta {currentLap}/{maxLaps}
                   </p>
-                  <p className='text-sm text-gray-600 dark:text-gray-300'>
+                  <p className='text-sm text-muted-foreground'>
                     🏎️ {drivers.length} Pilotos
                   </p>
                 </div>
               <div className='flex items-center gap-4'>
-                {isSimulationRunning && <p>Tiempo: {formatTime(elapsedTime)}</p>}
-                <button onClick={() => setIsHeaderOpen(!isHeaderOpen)} className='p-2'>
-                  {isHeaderOpen ? "Ocultar" : "Mostrar"}
+                {isSimulationRunning && <p className='font-mono font-bold text-primary animate-pulse'>TIME: {formatTime(elapsedTime)}</p>}
+                <button 
+                  onClick={() => setIsHeaderOpen(!isHeaderOpen)} 
+                  className='text-xs uppercase font-bold tracking-tighter opacity-50 hover:opacity-100 transition-opacity'
+                >
+                  {isHeaderOpen ? "[ HIDE ]" : "[ SHOW INFO ]"}
                 </button>
                 <ModeToggle />
               </div>
             </div>
             {isHeaderOpen && (
-              <div className='mt-2'>
-                
-                <p className='text-sm text-gray-500 dark:text-gray-400 mt-2'>
+              <div className='mt-4 pt-4 border-t border-border'>
+                <p className='text-sm text-muted-foreground'>
                   {isSimulationRunning 
                     ? "Simulación en curso - Las posiciones se actualizan cada 10 segundos"
                     : "Arrastra y suelta para cambiar el orden de los pilotos (solo cuando la simulación está detenida)"
                   }
                 </p>
-                <p className='text-xs text-gray-400 dark:text-gray-500 mt-2'>
+                <p className='text-xs text-muted-foreground/60 mt-1 italic'>
                   Para una mejor experiencia, usa el modo de pantalla completa (Windows: F11, Mac: Control + Command + F).
                 </p>
               </div>
@@ -539,21 +541,21 @@ export default function Home() {
               {!isSimulationRunning ? (
                 <button 
                   onClick={startSimulation}
-                  className='px-6 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-semibold transition-colors'
+                  className='f1-button-primary'
                 >
                   ▶ Iniciar Simulación
                 </button>
               ) : (
                 <button 
                   onClick={stopSimulation}
-                  className='px-6 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-semibold transition-colors'
+                  className='f1-button bg-destructive text-destructive-foreground'
                 >
                   ⏸ Detener Simulación
                 </button>
               )}
             </div>
 
-            <div className='border-2 border-gray-200 dark:border-gray-700 rounded-lg p-4 w-full bg-white dark:bg-gray-800'>
+            <div className='f1-card p-6 w-full'>
               {isClient && pilotos.length > 0 && (
                 <ListPilots
                   pilots={pilotos}
@@ -567,13 +569,14 @@ export default function Home() {
             </div>
 
             {pilotos.length === 0 && (
-              <div className='text-center p-8 text-gray-500'>
+              <div className='text-center p-8 text-muted-foreground'>
                 No hay datos de pilotos disponibles
               </div>
             )}
           </main>
         </>
       )}
+
 
       <footer className='row-start-3 flex flex-wrap items-center justify-center gap-4 py-4 w-full'>
         <p className='text-sm text-gray-600 dark:text-gray-400'>

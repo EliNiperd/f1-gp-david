@@ -93,11 +93,11 @@ export const TEAM_COLORS: { [key: string]: string } = {
 export const useOpenF1 = () => {
   const BASE_URL = "https://api.openf1.org/v1";
 
-  const fetchWithRetry = async (url: string, retries = 3, delay = 500): Promise<any> => {
+  const fetchWithRetry = async (url: string, retries = 5, delay = 1000): Promise<any> => {
     try {
       const response = await fetch(url);
       if (response.status === 429 && retries > 0) {
-        console.warn(`Rate limit hit (429). Retrying in ${delay}ms... (${retries} retries left)`);
+        console.warn(`Rate limit hit (429) for ${url}. Retrying in ${delay}ms... (${retries} retries left)`);
         await new Promise(resolve => setTimeout(resolve, delay));
         return fetchWithRetry(url, retries - 1, delay * 2);
       }
@@ -105,6 +105,7 @@ export const useOpenF1 = () => {
       return response.json();
     } catch (error) {
       if (retries > 0) {
+        console.warn(`Fetch error for ${url}. Retrying in ${delay}ms... (${retries} retries left)`, error);
         await new Promise(resolve => setTimeout(resolve, delay));
         return fetchWithRetry(url, retries - 1, delay * 2);
       }
