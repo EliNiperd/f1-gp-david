@@ -15,6 +15,7 @@ import { ListPilots } from "@/app/ListPilots";
 import { ModeToggle } from "@/components/mode-toggle";
 import { useOpenF1, PilotData, Meeting, Session, Driver, Lap, OpenF1Position, TyreData, TEAM_COLORS } from "@/lib/hooks"; // Import useOpenF1 and PilotData from lib/hooks.ts
 import LogoApp from "@/components/LogoApp";
+import packageJson from "@/package.json";
 
 export default function Home() {
   const api = useOpenF1();
@@ -254,7 +255,7 @@ export default function Home() {
       // Construir un mapa de las posiciones más recientes para cada piloto
       const relevantPositionsMap = new Map<UniqueIdentifier, OpenF1Position>();
       // Ordenar pastPositions por fecha para asegurar que la última posición para cada piloto sea la más reciente
-      const sorted पोलिसांनी positions = [...pastPositions].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+      const sortedPastPositions = [...pastPositions].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
       sortedPastPositions.forEach(pos => {
         relevantPositionsMap.set(pos.driver_number, pos);
@@ -571,17 +572,17 @@ export default function Home() {
               </div>
             )}
           </main>
-
-          <footer className='row-start-3 flex flex-wrap items-center justify-center gap-4'>
-            <p className='text-sm text-gray-600 dark:text-gray-400'>
-              &copy; {new Date().getFullYear()} Elí con acento. Datos por OpenF1 API.
-            </p>
-            <span className='text-xs px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded-full text-gray-500'>
-              v{require('../package.json').version}
-            </span>
-          </footer>
         </>
       )}
+
+      <footer className='row-start-3 flex flex-wrap items-center justify-center gap-4 py-4 w-full'>
+        <p className='text-sm text-gray-600 dark:text-gray-400'>
+          &copy; {new Date().getFullYear()} Elí con acento. Datos por OpenF1 API.
+        </p>
+        <span className='text-xs px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded-full text-gray-500'>
+          v{packageJson.version}
+        </span>
+      </footer>
     </div>
   );
 }
